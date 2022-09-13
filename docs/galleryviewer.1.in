@@ -1,0 +1,237 @@
+.TH "GALLERYVIEWER" "1" "{{ date }}" "galleryviewer {{ version }}" "galleryviewer Manual"
+.nh
+
+.SH NAME
+galleryviewer \- create an HTML viewer for images
+
+.SH SYNOPSIS
+
+.B galleryviewer
+.RI [ option ]...
+.IR PATHS ...
+
+.SH DESCRIPTION
+
+.PP
+.B galleryviewer
+will take a series of
+.I PATHS
+to image files, sort them (by default),
+place them within an HTML template,
+and write the resultant file (by default to standard output).
+The result is an HTML document for browsing and viewing the images.
+.SS Custom templates
+.PP
+.B galleryviewer
+uses Jinja templates to create the output HTML document.
+It comes packaged with two built-in templates
+(that differ only in color scheme) that can be selected via the
+.B \-\-profile
+option as
+"builtin/default.html" and "builtin/dark.html".
+Modify or extend these templates to create custom templates,
+or consult Jinja's
+.UR https://jinja.palletsprojects.com/en/latest/templates
+Template Designer Documentation
+.UE
+to make one from scratch.
+.PP
+For all templates, there are three variables available in the template:
+.TP
+title: string
+Name of current directory or argument to
+.B \-\-title
+if given.
+.TP
+data: object
+Contains whatever data was decoded from the
+.SM JSON
+formatted file given to
+.BR \-\-data\-file ,
+as decoded by Python's default
+.SM JSON
+decoder, json.JSONDecoder.
+.TP
+files: list of ImagePath objects
+Each ImagePath object has three attributes:
+(1) arg, the original file name argument passed in;
+(2) index, the order it was passed in (zero indexed) before any sorting;
+and (3) path,
+the pathlib.Path representation of the file's path.
+See the pathlib module for the many methods and properties
+available for operating on the path.
+.PP
+The quickest way to use a custom template is to pass the template's
+path to the
+.B \-\-template
+option.
+.PP
+For a more robust method, create a configuration file
+and configure profiles.
+Profiles are short names for paths on the file system where custom
+templates can be located.
+See
+.BR galleryviewer.conf (5)
+for the way to do this.
+Custom templates can then be selected by passing a
+.I PROFILE
+argument to the
+.B \-\-profile
+option.
+In the argument,
+separate the profile name from the template name with a slash.
+So, for an example profile named
+.I profile1
+and an example template named
+.I template.html
+the argument would be
+"\f[I]profile1\f[R]/\f[I]template.html\f[R]".
+The profile name will be expanded to
+the path value from the configuration file.
+If there is no slash in the argument
+it is assumed to be just a profile name,
+and the default template name, "default.html",
+will be appended automatically.
+
+.SH OPTIONS
+
+.TP
+.BR \-h ", " \-\-help
+Show the help message and exit.
+.TP
+.BR \-V ", " \-\-version
+Show the program version number and exit.
+.TP
+\f[B]\-d\f[R] \f[I]FILE\f[R], \f[B]\-\-data\-file=\f[R]\f[I]FILE\f[R]
+Load data from
+.I FILE
+in
+.SM JSON
+format.
+Not used by the built-in templates,
+but provides a way of loading data into custom templates.
+.TP
+\f[B]\-o\f[R] \f[I]FILE\f[R], \f[B]\-\-output=\f[R]\f[I]FILE\f[R]
+Place output into
+.IR FILE .
+If this option is omitted, the default is to write to standard output.
+.TP
+\f[B]\-p\f[R] \f[I]PROFILE\f[R], \f[B]\-\-profile=\f[R]\f[I]PROFILE\f[R]
+Use
+.I PROFILE
+instead of the default profile, "builtin/default.html".
+See the above section about Custom templates to use this option to select
+custom templates.
+.TP
+\f[B]\-t\f[R] \f[I]FILE\f[R], \f[B]\-\-template=\f[R]\f[I]FILE\f[R]
+Load template directly from
+.IR FILE .
+.TP
+.BR \-\-test " | " \-\-no\-test
+Exit if not all
+.I PATHS
+exist as files.
+.TP
+\f[B]\-T\f[R] \f[I]TITLE\f[R], \f[B]\-\-title=\f[R]\f[I]TITLE\f[R]
+Custom <title>.
+.SS Sorting options
+.TP
+.BR \-n ", " \-\-check\-sort
+Do not emit HTML.
+Instead print
+.I PATHS
+in the chosen sorting order, to ensure the order is correct.
+.TP
+.BR \-c ", " \-\-consider\-case " | " \-f ", " \-\-ignore\-case
+Turn case-sensitive sorting of
+.I PATHS
+on or off.
+.TP
+.BI "\-\-sort=" "WORD"
+.I WORD
+can be one of three possible sort methods:
+.RS
+.TP
+"none"
+Do not sort.
+Include
+.I PATHS
+exactly as they are given on the command line.
+.RB "Aliases: " \-U " or " \-\-no\-sort .
+.TP
+"ascii"
+Lexicographic sort.
+This is the sorting method already used by the shell.
+If you pass a glob like \f[C]*.jpg\f[],
+the file names matching that glob will be expanded by the shell in
+.SM ASCII
+or lexicographic sorting order.
+.TP
+"human"
+Human or natural or \[lq]version\[rq] sort.
+This treats numbers within pathnames specially,
+sorting them in numeric order rather than lexicographic order.
+This is the sorting method used by most graphical file managers.
+This is the default value for
+.BR --sort .
+.RE
+.TP
+.BR \-\-U ", " \-\-no\-sort
+Do not sort
+.IR PATHS .
+
+.SH "EXIT STATUS"
+.TP
+0
+Normal exit.
+.TP
+1
+Exited because
+.B \-\-test\-paths
+was requested and one or more
+.I PATHS
+failed to exist.
+.TP
+2
+Error with parsing command-line arguments.
+.TP
+100
+Error with decoding argument to
+.B \-\-data\-file
+as
+.SM JSON.
+.TP
+101
+Error with loading or parsing the requested template.
+
+.SH FILES
+.TP
+.I /etc/galleryviewer.conf
+The system wide configuration file. See
+.BR galleryviewer.conf (5)
+for further details.
+.TP
+.IR $XDG_CONFIG_HOME/galleryviewer/config " or " ~/.config/galleryviewer/config
+Per user configuration file. See
+.BR galleryviewer.conf (5)
+for further details.
+.PP
+The configuration will be read in the above order,
+with values in later files overriding.
+Configuration files with lines that cannot be parsed (due to syntax errors)
+will be skipped and not read.
+
+.SH EXAMPLES
+.IP
+\f[C]galleryviewer -o index.html 1.jpg 10.jpg 2.jpg\f[R]
+.PP
+Write an HTML document for viewing to index.html.
+.IP
+\f[C]galleryviewer *.jpg > index.html\f[R]
+.PP
+Functionally the same example as the first, but using shell features:
+globbing to select matching pathnames in the current directory
+and redirection to place standard output into a file.
+
+.SH "SEE ALSO"
+.BR galleryviewer.conf (5)

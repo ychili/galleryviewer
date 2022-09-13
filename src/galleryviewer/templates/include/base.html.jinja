@@ -1,0 +1,35 @@
+{# This is a base template. Don’t render it directly. #}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<style>
+{% block stylesheet %}
+{% endblock %}
+</style>
+</head>
+<body>
+<div id="content">
+  <div id="tab-container">
+    {% for file in files %}
+    <button class="tab">{{ loop.index }}</button>
+    {% endfor %}
+  </div>
+  <div id="page-container">
+    {% for file in files %}
+    <div class="page">
+      <p class="page-header">
+        <span class="page-number">{{ loop.index }} / {{ loop.length }}</span> <span class="image-name">{{ file.arg }}</span>
+      </p>
+      <img class="image-item" src="{{ file.arg }}" />
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+{% include "builtin/include/scripts.js" %}
+</script>
+</body>
+</html>

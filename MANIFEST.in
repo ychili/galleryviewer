@@ -1,0 +1,7 @@
+graft src/galleryviewer/templates
+graft docs
+graft test
+
+include Makefile
+include scripts/*.py
+include data/*.html
