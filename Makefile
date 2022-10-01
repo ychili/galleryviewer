@@ -29,10 +29,10 @@ $(DATADIR)/galleryviewer.conf.5: $(DOC_SOURCES) $(PKG_VERSION_SOURCE) | $(DATADI
 	$(render) < $(DOCSDIR)/galleryviewer.conf.5.in > $@
 
 $(DATADIR):
-	mkdir $(DATADIR)
+	mkdir -p $(DATADIR)
 
 clean:
-	rm $(DATADIR)/*
+	rm -rf $(DATADIR)
 
 test:
 	./test/test_cli.sh
