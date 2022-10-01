@@ -34,9 +34,9 @@ class ImagePath:
 
 class Config:
 
-    def __init__(self, parser=None):
+    def __init__(self, parser=None, rules=None):
         self.parser = parser or configparser.ConfigParser(os.environ)
-        self.rules = {}
+        self.rules = rules or {}
         self.profiles = {}
         self.options = {}
 
@@ -214,8 +214,6 @@ def main():
 def get_config():
     parser = configparser.ConfigParser(
         interpolation=None)
-    config = Config(parser)
-    config.options = OPTION_DEFAULTS
     data_file_rule = rule(dest="data_file")
     rules = {
         "sort": rule(dest="sort", choices=(
@@ -227,7 +225,8 @@ def get_config():
         "datafile": data_file_rule,
         "profile": rule(dest="profile")
     }
-    config.rules = rules
+    config = Config(parser, rules)
+    config.options = OPTION_DEFAULTS
     config.read(generate_config_paths())
     return config
 
