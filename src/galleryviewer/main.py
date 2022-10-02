@@ -6,7 +6,6 @@ import os
 import pathlib
 import re
 import sys
-from contextlib import nullcontext
 from dataclasses import dataclass
 
 from jinja2 import (Environment, FileSystemLoader, PackageLoader, PrefixLoader,
@@ -311,8 +310,11 @@ def load_template(env, name, file=None):
 
 
 def emit(outfile, template, context):
-    with outfile as file:
-        file.write(template.render(context))
+    document = template.render(context)
+    if outfile == sys.stdout:
+        return outfile.write(document)
+    with outfile:
+        return outfile.write(document)
 
 
 def parse_cla(defaults):
@@ -355,7 +357,7 @@ def parse_cla(defaults):
         type=argparse.FileType("r", encoding="utf-8"),
         help="load data from %(metavar)s in JSON format")
     parser.add_argument(
-        "-o", "--output", metavar="FILE", default=nullcontext(sys.stdout),
+        "-o", "--output", metavar="FILE", default=sys.stdout,
         type=argparse.FileType("w", encoding="utf-8"),
         help="place output into %(metavar)s (default is stdout)")
     parser.add_argument(
