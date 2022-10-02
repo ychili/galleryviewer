@@ -2,6 +2,8 @@ graft src/galleryviewer/templates
 graft docs
 graft test
 
+prune */__pycache__
+
 include Makefile
 include scripts/*.py
 include data/*.html

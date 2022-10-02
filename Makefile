@@ -35,6 +35,7 @@ clean:
 	rm -rf $(DATADIR)
 
 test:
-	./test/test_cli.sh
+	sh test/test_cli.sh
+	python3 test/test_doctest.py
 
 .PHONY: clean test

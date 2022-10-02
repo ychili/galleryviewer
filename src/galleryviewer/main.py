@@ -169,7 +169,8 @@ def atoi(string):
 def alphanum_key(string):
     """Turn a string into a list of string and number chunks.
 
-    "z23a" -> ["z", 23, "a"]
+    >>> alphanum_key("z23a")
+    ['z', 23, 'a']
     """
     return [atoi(char) for char in re.split("([0-9]+)", string)]
 
