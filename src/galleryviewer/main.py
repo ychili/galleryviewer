@@ -32,37 +32,38 @@ class ImagePath:
 
 
 class Config:
+    """Extract config values from *parser*."""
 
-    def __init__(self, parser=None, rules=None):
+    def __init__(self, parser=None):
         self.parser = parser or configparser.ConfigParser(os.environ)
-        self.rules = rules or {}
+        self.rules = {}
         self.profiles = {}
         self.options = {}
 
-    @staticmethod
-    def parse_profiles(mapping):
-        """Return new mapping with path values expanded."""
-        return {key: os.path.expanduser(value)
-                for key, value in mapping.items()}
+    def parse_profiles(self, mapping):
+        """Update profiles from *mapping*."""
+        parsed = {key: os.path.expanduser(value)
+                  for key, value in mapping.items()}
+        self.profiles.update(parsed)
 
-    @staticmethod
-    def parse_options(mapping, rules, source=None):
-        """Return new mapping of options parsed by *rules* from *mapping*."""
+    def parse_options(self, mapping, source=None):
+        """Update options from *mapping*."""
         source = source or "<???>"
         parsed = {}
         for opt in mapping:
-            opt_rule = rules.get(opt)
+            opt_rule = self.rules.get(opt)
             if opt_rule is None:
                 continue
-            value = opt_rule.get(mapping, opt)
+            dest, get = opt_rule
+            value = get(mapping, opt)
             if value is None:
                 # value was rejected by a rule
                 logging.warning(
                     "in %r: invalid value for config option %s: %s",
                     source, opt, mapping[opt])
                 continue
-            parsed[opt_rule.dest] = value
-        return parsed
+            parsed[dest] = value
+        self.options.update(parsed)
 
     def read_file(self, file, source=None):
         """Read and parse a file-like object.
@@ -77,11 +78,9 @@ class Config:
             logging.warning("in %r: %s", source, err)
             return
         if "options" in self.parser:
-            self.options.update(
-                self.parse_options(self.parser["options"], self.rules, source))
+            self.parse_options(self.parser["options"], source)
         if "profiles" in self.parser:
-            self.profiles.update(
-                self.parse_profiles(self.parser["profiles"]))
+            self.parse_profiles(self.parser["profiles"])
 
     def read(self, filenames, encoding="utf-8"):
         """Read and parse an iterable of filenames.
@@ -101,61 +100,24 @@ class Config:
             found.append(filename)
         return found
 
-
-class StoreRule:
-
-    def __init__(self, dest, converter=""):
-        self.dest = dest
-        self.converter = f"get{converter}"
-
-    def get(self, mapping, option):
-        """Convert the value, and return it."""
-        return getattr(mapping, self.converter)(option)
-
-    def __repr__(self):
-        attrs = [f"{attr}={val!r}" for attr, val in vars(self).items()]
-        return f"{type(self).__name__}({', '.join(attrs)})"
-
-
-class ChoicesRule(StoreRule):
-
-    def __init__(self, dest, choices, converter=""):
-        super().__init__(dest, converter)
-        self.choices = choices
-
-    def get(self, mapping, option):
-        """
-        Convert the value, return None if not in *choices*, otherwise return
-        the value.
-        """
-        value = getattr(mapping, self.converter)(option)
-        if value in self.choices:
+    def add_rule(self,
+                 *options,
+                 dest=None,
+                 converter="",
+                 choices=None,
+                 actions=None):
+        """Add an option-parsing rule."""
+        if dest is None:
+            dest = options[0]
+        def get(mapping, option):
+            value = getattr(mapping, f"get{converter}")(option)
+            if choices is not None:
+                return value if value in choices else None
+            if actions is not None:
+                return actions.get(value)
             return value
-        return None
-
-
-class ActionsRule(StoreRule):
-
-    def __init__(self, dest, actions, converter=""):
-        super().__init__(dest, converter)
-        self.actions = actions
-
-    def get(self, mapping, option):
-        """
-        Convert the value, return None if not in *actions*, otherwise return
-        the mapped value from *actions*.
-        """
-        value = getattr(mapping, self.converter)(option)
-        return self.actions.get(value)
-
-
-def rule(dest, converter="", choices=None, actions=None):
-    """Return an option parsing rule."""
-    if choices is not None:
-        return ChoicesRule(dest=dest, converter=converter, choices=choices)
-    if actions is not None:
-        return ActionsRule(dest=dest, converter=converter, actions=actions)
-    return StoreRule(dest=dest, converter=converter)
+        for name in options:
+            self.rules[name] = (dest, get)
 
 
 def atoi(string):
@@ -212,20 +174,15 @@ def main():
 
 
 def get_config():
-    parser = configparser.ConfigParser(
-        interpolation=None)
-    data_file_rule = rule(dest="data_file")
-    rules = {
-        "sort": rule(dest="sort", choices=(
-            "none", "ascii", "human", "default")),
-        "case": rule(dest="ignore_case", actions={
-            "ignore": True, "consider": False}),
-        "test": rule(dest="test", converter="boolean"),
-        "data-file": data_file_rule,
-        "datafile": data_file_rule,
-        "profile": rule(dest="profile")
-    }
-    config = Config(parser, rules)
+    parser = configparser.ConfigParser(interpolation=None)
+    config = Config(parser)
+    config.add_rule("sort",
+                    choices={"none", "ascii", "human", "default"})
+    config.add_rule("case", dest="ignore_case",
+                    actions={"ignore": True, "consider": False})
+    config.add_rule("test", converter="boolean")
+    config.add_rule("data_file", "datafile", "data-file")
+    config.add_rule("profile")
     config.options = OPTION_DEFAULTS
     config.read(generate_config_paths())
     return config
