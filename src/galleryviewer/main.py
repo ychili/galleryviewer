@@ -50,17 +50,19 @@ class Config:
         """Update options from *mapping*."""
         source = source or "<???>"
         parsed = {}
-        for opt in mapping:
-            opt_rule = self.rules.get(opt)
-            if opt_rule is None:
+        for opt_key in mapping:
+            opt = opt_key.lower()
+            # casefold key before searching rules
+            try:
+                dest, get = self.rules[opt]
+            except KeyError:
                 continue
-            dest, get = opt_rule
             value = get(mapping, opt)
             if value is None:
-                # value was rejected by a rule
+                # None means value was rejected by a rule
                 logging.warning(
                     "in %r: invalid value for config option %s: %s",
-                    source, opt, mapping[opt])
+                    source, opt, mapping[opt_key])
                 continue
             parsed[dest] = value
         self.options.update(parsed)
@@ -106,7 +108,12 @@ class Config:
                  converter="",
                  choices=None,
                  actions=None):
-        """Add an option-parsing rule."""
+        """Add an option-parsing rule.
+
+        *options* are the allowable aliases for the option name. If *dest* is
+        not provided or None, the first of these will be used as the
+        destination.
+        """
         if dest is None:
             dest = options[0]
         def get(mapping, option):
@@ -141,6 +148,7 @@ def main():
     logging.basicConfig(level=logging.INFO,
                         format=f"{_PROG}: %(levelname)s: %(message)s")
     config = get_config()
+    config.read(generate_config_paths())
     args = parse_cla(config.options)
 
     files = create_paths(args.paths, args.sort, args.ignore_case)
@@ -174,6 +182,7 @@ def main():
 
 
 def get_config():
+    """Build and return config parser."""
     parser = configparser.ConfigParser(interpolation=None)
     config = Config(parser)
     config.add_rule("sort",
@@ -184,7 +193,6 @@ def get_config():
     config.add_rule("data_file", "datafile", "data-file")
     config.add_rule("profile")
     config.options = OPTION_DEFAULTS
-    config.read(generate_config_paths())
     return config
 
 

@@ -69,6 +69,7 @@ option.
 .PP
 Option values that are not the correct type will generate a warning
 message.
+Option names are case insensitive.
 Recognized values for boolean options are \[aq]yes\[aq]/\[aq]no\[aq],
 \[aq]on\[aq]/\[aq]off\[aq], \[aq]true\[aq]/\[aq]false\[aq], and
 \[aq]1\[aq]/\[aq]0\[aq], case-insensitive.
