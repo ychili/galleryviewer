@@ -149,7 +149,7 @@ def main():
                         format=f"{_PROG}: %(levelname)s: %(message)s")
     config = get_config()
     config.read(generate_config_paths())
-    args = parse_cla(config.options)
+    args = get_cla(config.options).parse_args()
 
     files = create_paths(args.paths, args.sort, args.ignore_case)
     if args.check_sort:
@@ -283,8 +283,8 @@ def emit(outfile, template, context):
         return outfile.write(document)
 
 
-def parse_cla(defaults):
-    """Parse command-line arguments."""
+def get_cla(defaults):
+    """Build and return parser for command-line arguments."""
     # If defaults does not contain all needed argument defaults, raise
     # KeyError. This is just easier to debug than providing another layer of
     # get defaults.
@@ -345,4 +345,4 @@ def parse_cla(defaults):
     parser.add_argument(
         "-T", "--title",
         help="custom title (default is current directory name)")
-    return parser.parse_args()
+    return parser
