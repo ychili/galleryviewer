@@ -12,13 +12,13 @@ _test_check_sort() {
 }
 
 _test_check_sort_output() {
-  CMD="$_EXE --check-sort $_TEST_PATHS"
+  cmd="$_EXE --check-sort $_TEST_PATHS"
 
-  if test "$($CMD --sort=none)" != "$(printf %s\\n $_TEST_PATHS)"
+  if [ "$($cmd --sort=none)" != "$(printf %s\\n $_TEST_PATHS)" ]
   then return 1; fi
-  if test "$($CMD --sort=ascii)" != "$(printf %s\\n $_TEST_PATHS)"
+  if [ "$($cmd --sort=ascii)" != "$(printf %s\\n $_TEST_PATHS)" ]
   then return 1; fi
-  if test "$($CMD --sort=human)" != "$(printf %s\\n 1.jpg 2.jpg 10.jpg)"
+  if [ "$($cmd --sort=human)" != "$(printf %s\\n 1.jpg 2.jpg 10.jpg)" ]
   then return 1; fi
   return 0
 }
