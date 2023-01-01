@@ -28,4 +28,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        print(__doc__, file=sys.stderr)
+        raise
