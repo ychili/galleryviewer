@@ -1,8 +1,9 @@
+PYTHON ?= python3
 DOCSDIR = docs
 DATADIR = data
 DOC_SOURCES = $(DOCSDIR)/galleryviewer.1.in $(DOCSDIR)/galleryviewer.conf.5.in
 PKG_VERSION_SOURCE = src/galleryviewer/__init__.py
-render = python3 scripts/render.py $(PKG_VERSION_SOURCE) $(DOC_SOURCES)
+render = $(PYTHON) scripts/render.py $(PKG_VERSION_SOURCE) $(DOC_SOURCES)
 grohtml = groff -man -Thtml -P-l
 
 docs: man
@@ -36,6 +37,6 @@ clean:
 
 test:
 	sh test/test_cli.sh
-	python3 test/test_doctest.py
+	$(PYTHON) test/test_doctest.py
 
 .PHONY: clean test
