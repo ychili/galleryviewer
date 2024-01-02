@@ -15,7 +15,8 @@ def pkg_version(path):
             if line.startswith("__version__"):
                 delim = '"' if '"' in line else "'"
                 return line.split(delim)[1]
-    raise RuntimeError("Unable to find version string.")
+    msg = "Unable to find version string."
+    raise RuntimeError(msg)
 
 
 def main():
