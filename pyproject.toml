@@ -7,3 +7,6 @@ max-line-length = 88
 
 [tool.pylint."messages control"]
 disable = "missing-docstring"
+
+[tool.isort]
+# Use default isort settings.
