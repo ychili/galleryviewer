@@ -10,7 +10,7 @@ import jinja2
 
 
 def pkg_version(path):
-    with open(path) as src_file:
+    with open(path, encoding="utf-8") as src_file:
         for line in src_file:
             if line.startswith("__version__"):
                 delim = '"' if '"' in line else "'"
