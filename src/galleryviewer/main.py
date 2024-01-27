@@ -151,7 +151,7 @@ def main():
     config.read(generate_config_paths())
     args = get_cla(config.options).parse_args()
 
-    files = create_paths(args.paths, args.sort, args.ignore_case)
+    files = create_paths(args.paths, sort_method=args.sort, caseless=args.ignore_case)
     if args.check_sort:
         check_sort(files, args.sort)
         return 0
@@ -196,7 +196,7 @@ def get_config():
     return config
 
 
-def create_paths(paths, sort_method=None, caseless=True):
+def create_paths(paths, sort_method=None, *, caseless=True):
     """Create and return a sorted list of ImagePaths."""
     files = [ImagePath(arg, ind) for ind, arg in enumerate(paths)]
     if sort_method == "none":
