@@ -39,4 +39,4 @@ test:
 	sh test/test_cli.sh
 	$(PYTHON) test/test_doctest.py
 
-.PHONY: clean test
+.PHONY: clean test docs man html
