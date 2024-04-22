@@ -76,12 +76,10 @@ function processKeyDown(e) {
         case 's':
             window.scrollBy(0, SCROLL_AMOUNT); return;
     }
-    switch (e.keyCode) {
-        case 37:
-            // left arrow
+    switch (e.key) {
+        case "ArrowLeft":
             plusPage(-1); return;
-        case 39:
-            // right arrow
+        case "ArrowRight":
             plusPage(1); return;
     }
 }
