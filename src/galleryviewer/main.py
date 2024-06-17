@@ -155,9 +155,8 @@ def main():
     if args.check_sort:
         check_sort(files, args.sort)
         return 0
-    if args.test:
-        if not test_paths(files):
-            return 1
+    if args.test and not test_paths(files):
+        return 1
 
     try:
         data = load_data_file(file=args.data_file)
