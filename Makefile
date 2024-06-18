@@ -16,11 +16,11 @@ html: $(DATADIR)/galleryviewer.1.html $(DATADIR)/galleryviewer.conf.5.html
 	gzip -9 -c $< > $@
 
 $(DATADIR)/galleryviewer.1.html: $(DATADIR)/galleryviewer.1
-	SOURCE_DATA_EPOCH=$$(stat -c %Y $(DOCSDIR)/galleryviewer.1.in) \
+	SOURCE_DATE_EPOCH=$$(stat -c %Y $(DOCSDIR)/galleryviewer.1.in) \
 		$(grohtml) $< > $@
 
 $(DATADIR)/galleryviewer.conf.5.html: $(DATADIR)/galleryviewer.conf.5
-	SOURCE_DATA_EPOCH=$$(stat -c %Y $(DOCSDIR)/galleryviewer.conf.5.in) \
+	SOURCE_DATE_EPOCH=$$(stat -c %Y $(DOCSDIR)/galleryviewer.conf.5.in) \
 		$(grohtml) $< > $@
 
 $(DATADIR)/galleryviewer.1: $(DOC_SOURCES) $(PKG_VERSION_SOURCE) | $(DATADIR)
