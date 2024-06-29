@@ -12,14 +12,17 @@ _test_version() { $_EXE --version; }
 _test_help() { $_EXE --help; }
 
 _test_check_sort() {
+  # shellcheck disable=SC2086
   $_EXE --check-sort $_TEST_PATHS
 }
 
 _test_check_sort_output() {
   cmd="$_EXE --check-sort $_TEST_PATHS"
 
+  # shellcheck disable=SC2086
   if [ "$($cmd --sort=none)" != "$(printf %s\\n $_TEST_PATHS)" ]
   then return 1; fi
+  # shellcheck disable=SC2086
   if [ "$($cmd --sort=ascii)" != "$(printf %s\\n $_TEST_PATHS)" ]
   then return 1; fi
   if [ "$($cmd --sort=human)" != "$(printf %s\\n 1.jpg 2.jpg 10.jpg)" ]
