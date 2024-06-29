@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#  test_cli.sh
+
+#  Test galleryviewer's command-line interface.
+
 _EXE="galleryviewer"
 _TEST_PATHS='1.jpg 10.jpg 2.jpg'
 
