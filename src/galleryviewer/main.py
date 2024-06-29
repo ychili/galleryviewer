@@ -237,13 +237,13 @@ def load_data_file(file=None):
 
 
 def generate_config_paths():
-    yield f"/etc/{_PROG}.conf"
+    yield pathlib.Path("etc", f"{_PROG}.conf")
     xdg_config_home = os.getenv("XDG_CONFIG_HOME")
     home = os.getenv("HOME")
     if xdg_config_home:
-        yield os.path.join(xdg_config_home, _PROG, "config")
+        yield pathlib.Path(xdg_config_home, _PROG, "config")
     elif home:
-        yield os.path.join(home, ".config", _PROG, "config")
+        yield pathlib.Path(home, ".config", _PROG, "config")
 
 
 def add_default_suffix(arg):
