@@ -173,10 +173,10 @@ This treats numbers within pathnames specially,
 sorting them in numeric order rather than lexicographic order.
 This is the sorting method used by most graphical file managers.
 This is the default value for
-.BR --sort .
+.BR \-\-sort .
 .RE
 .TP
-.BR \-\-U ", " \-\-no\-sort
+.BR \-U ", " \-\-no\-sort
 Do not sort
 .IR PATHS .
 
