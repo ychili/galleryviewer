@@ -87,7 +87,8 @@ class Config:
     def read(self, filenames, encoding="utf-8"):
         """Read and parse an iterable of filenames.
 
-        Files that cannot be opened or decoded are silently ignored.
+        Files that cannot be opened are silently ignored. Files that cannot be
+        decoded are ignored and trigger a warning log.
 
         Return list of successfully read files.
         """
@@ -95,7 +96,10 @@ class Config:
         for filename in filenames:
             try:
                 file = open(filename, "r", encoding=encoding)
-            except (OSError, UnicodeDecodeError):
+            except OSError:
+                continue
+            except UnicodeDecodeError as err:
+                logging.warning("ignoring config file %r: %s", filename, err)
                 continue
             with file:
                 self.read_file(file, source=filename)
