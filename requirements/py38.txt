@@ -1,0 +1,4 @@
+pytest
+# Simulate an Ubuntu 20.04 environment
+Jinja2 ~= 2.10.1
+MarkupSafe ~= 1.1.0

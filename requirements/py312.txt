@@ -1,0 +1,4 @@
+pytest
+# Simulate an Ubuntu 24.04 environment
+Jinja2 ~= 3.1.2
+MarkupSafe ~= 2.1.5

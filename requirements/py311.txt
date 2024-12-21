@@ -1,0 +1,4 @@
+pytest
+# Simulate a Debian 12 environment
+Jinja2 ~= 3.1.2
+MarkupSafe ~= 2.1.2

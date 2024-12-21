@@ -1,0 +1,4 @@
+pytest
+# Simulate a Debian 11 environment
+Jinja2 ~= 2.11.3
+MarkupSafe ~= 1.1.1
