@@ -148,12 +148,12 @@ def alphanum_key(string):
     return [atoi(char) for char in re.split("([0-9]+)", string)]
 
 
-def main():
+def main(argv=None):
     logging.basicConfig(level=logging.INFO,
                         format=f"{_PROG}: %(levelname)s: %(message)s")
     config = get_config()
     config.read(generate_config_paths())
-    args = get_cla(config.options).parse_args()
+    args = get_cla(config.options).parse_args(argv)
 
     files = create_paths(args.paths, sort_method=args.sort, caseless=args.ignore_case)
     if args.check_sort:
