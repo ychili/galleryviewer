@@ -15,4 +15,5 @@ disable = "missing-docstring"
 # Use default isort settings.
 
 [tool.pytest.ini_options]
+minversion = "7.0"
 addopts = "--doctest-modules"
