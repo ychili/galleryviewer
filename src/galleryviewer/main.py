@@ -24,6 +24,12 @@ OPTION_DEFAULTS = {"data_file": None,
                    "profile": f"builtin/{DEFAULT_TMPL_NAME}",
                    "sort": "human",
                    "test": False}
+EX_OK = 0
+EX_TESTFAIL = 1
+EX_NOINPUT = 66
+EX_JSONERR = 100
+EX_NOTEMPLATE = 101
+EX_OUTPUT = 102
 
 
 @dataclass
@@ -136,6 +142,12 @@ class Config:
             self.rules[name] = (dest, get)
 
 
+class _FatalError(Exception):
+    def __init__(self, status=1) -> None:
+        super().__init__(status)
+        self.status = status
+
+
 def atoi(string):
     """Also known as try_int"""
     try:
@@ -153,7 +165,6 @@ def alphanum_key(string):
     return [atoi(char) for char in re.split("([0-9]+)", string)]
 
 
-# pylint: disable=too-many-return-statements
 def main(argv=None):
     logging.basicConfig(level=logging.INFO,
                         format=f"{_PROG}: %(levelname)s: %(message)s")
@@ -164,28 +175,20 @@ def main(argv=None):
     files = create_paths(args.paths, sort_method=args.sort, caseless=args.ignore_case)
     if args.check_sort:
         check_sort(files, args.sort)
-        return 0
+        return EX_OK
     if args.test and not test_paths(files):
-        return 1
+        return EX_TESTFAIL
 
     try:
         data = load_data_file(file=args.data_file)
-    except json.JSONDecodeError as err:
-        logging.error("unable to decode %s as JSON: %s", args.data_file, err)
-        return 100
-    except OSError as err:
-        logging.error("unable to open data file: %s", err)
-        return 1
+    except _FatalError as err:
+        return err.status
 
     env = get_environment(config.profiles.items())
     try:
         template = load_template(env, name=args.profile, file=args.template)
-    except TemplateNotFound as err:
-        logging.error("template not found: %s", err.message)
-        return 101
-    except OSError as err:
-        logging.error("unable to read template file: %s", err)
-        return 1
+    except _FatalError as err:
+        return err.status
 
     substitutions = {
         "title": args.title or pathlib.Path.cwd().name,
@@ -197,8 +200,8 @@ def main(argv=None):
             emit(outfile, template, substitutions)
     except OSError as err:
         logging.error("unable to write to output: %s", err)
-        return 1
-    return 0
+        return EX_OUTPUT
+    return EX_OK
 
 
 def file_or_standard_stream(file_arg, mode, encoding="UTF-8", **open_kwargs):
@@ -260,10 +263,17 @@ def test_paths(files):
 
 
 def load_data_file(file=None):
-    if file is not None:
+    if file is None:
+        return {}
+    try:
         with open(file, encoding="UTF-8") as jsonfile:
             return json.load(jsonfile)
-    return {}
+    except json.JSONDecodeError as err:
+        logging.error("unable to decode %s as JSON: %s", file, err)
+        raise _FatalError(EX_JSONERR) from err
+    except OSError as err:
+        logging.error("unable to open data file: %s", err)
+        raise _FatalError(EX_NOINPUT) from err
 
 
 def generate_config_paths():
@@ -299,9 +309,17 @@ def get_environment(prefixes, **env_kwargs):
 
 def load_template(env, name, file=None):
     if file is not None:
-        with file_or_standard_stream(file, 'r', encoding=None) as templatefile:
-            return env.from_string(templatefile.read())
-    return env.get_template(name)
+        try:
+            with file_or_standard_stream(file, 'r', encoding=None) as templatefile:
+                return env.from_string(templatefile.read())
+        except OSError as err:
+            logging.error("unable to read template file: %s", err)
+            raise _FatalError(EX_NOINPUT) from err
+    try:
+        return env.get_template(name)
+    except TemplateNotFound as err:
+        logging.error("template not found: %s", err.message)
+        raise _FatalError(EX_NOTEMPLATE) from err
 
 
 def emit(outfile, template, context):

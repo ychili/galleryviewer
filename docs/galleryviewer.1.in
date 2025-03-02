@@ -195,6 +195,13 @@ failed to exist.
 2
 Error with parsing command-line arguments.
 .TP
+66
+Error because the argument to
+.B \-\-data\-file
+or
+.B \-\-template
+did not exist or was not readable.
+.TP
 100
 Error with decoding argument to
 .B \-\-data\-file
@@ -203,6 +210,11 @@ as
 .TP
 101
 Error with loading or parsing the requested template.
+.TP
+102
+Error with writing output to specified argument to
+.B \-\-output
+or to standard output.
 
 .SH FILES
 .TP
