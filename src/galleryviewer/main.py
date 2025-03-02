@@ -13,6 +13,11 @@ from jinja2 import (Environment, FileSystemLoader, PackageLoader, PrefixLoader,
 
 from . import _PROG, __version__
 
+if sys.version_info >= (3, 7):
+    from contextlib import nullcontext
+else:
+    from .compat import NullContextManager as nullcontext
+
 DEFAULT_TMPL_NAME = "default.html"
 OPTION_DEFAULTS = {"data_file": None,
                    "ignore_case": True,
@@ -148,6 +153,7 @@ def alphanum_key(string):
     return [atoi(char) for char in re.split("([0-9]+)", string)]
 
 
+# pylint: disable=too-many-return-statements
 def main(argv=None):
     logging.basicConfig(level=logging.INFO,
                         format=f"{_PROG}: %(levelname)s: %(message)s")
@@ -167,6 +173,9 @@ def main(argv=None):
     except json.JSONDecodeError as err:
         logging.error("unable to decode %s as JSON: %s", args.data_file, err)
         return 100
+    except OSError as err:
+        logging.error("unable to open data file: %s", err)
+        return 1
 
     env = get_environment(config.profiles.items())
     try:
@@ -174,14 +183,31 @@ def main(argv=None):
     except TemplateNotFound as err:
         logging.error("template not found: %s", err.message)
         return 101
+    except OSError as err:
+        logging.error("unable to read template file: %s", err)
+        return 1
 
     substitutions = {
         "title": args.title or pathlib.Path.cwd().name,
         "files": files,
         "data": data
     }
-    emit(args.output, template, substitutions)
+    try:
+        with file_or_standard_stream(args.output, 'w', encoding="UTF-8") as outfile:
+            emit(outfile, template, substitutions)
+    except OSError as err:
+        logging.error("unable to write to output: %s", err)
+        return 1
     return 0
+
+
+def file_or_standard_stream(file_arg, mode, encoding="UTF-8", **open_kwargs):
+    if file_arg is None or file_arg == '-':
+        if 'r' in mode:
+            return nullcontext(sys.stdin)
+        if 'w' in mode:
+            return nullcontext(sys.stdout)
+    return open(file_arg, mode, encoding=encoding, **open_kwargs)
 
 
 def get_config():
@@ -235,8 +261,8 @@ def test_paths(files):
 
 def load_data_file(file=None):
     if file is not None:
-        with file:
-            return json.load(file)
+        with open(file, encoding="UTF-8") as jsonfile:
+            return json.load(jsonfile)
     return {}
 
 
@@ -273,17 +299,14 @@ def get_environment(prefixes, **env_kwargs):
 
 def load_template(env, name, file=None):
     if file is not None:
-        with file:
-            return env.from_string(file.read())
+        with file_or_standard_stream(file, 'r', encoding=None) as templatefile:
+            return env.from_string(templatefile.read())
     return env.get_template(name)
 
 
 def emit(outfile, template, context):
     document = template.render(context)
-    if outfile == sys.stdout:
-        return outfile.write(document)
-    with outfile:
-        return outfile.write(document)
+    outfile.write(document)
 
 
 def get_cla(defaults):
@@ -323,11 +346,9 @@ def get_cla(defaults):
         help="include PATHS in the order passed without sorting")
     parser.add_argument(
         "-d", "--data-file", metavar="FILE", default=defaults["data_file"],
-        type=argparse.FileType("r", encoding="utf-8"),
         help="load data from %(metavar)s in JSON format")
     parser.add_argument(
-        "-o", "--output", metavar="FILE", default=sys.stdout,
-        type=argparse.FileType("w", encoding="utf-8"),
+        "-o", "--output", metavar="FILE",
         help="place output into %(metavar)s (default is stdout)")
     parser.add_argument(
         "-p", "--profile",
@@ -335,7 +356,6 @@ def get_cla(defaults):
         help="use PROFILE instead of %(default)s")
     parser.add_argument(
         "-t", "--template", metavar="FILE",
-        type=argparse.FileType("r"),
         help="load template directly from %(metavar)s")
     testing = parser.add_mutually_exclusive_group()
     testing.add_argument(
