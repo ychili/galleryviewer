@@ -1,5 +1,6 @@
 """Test galleryviewer's command-line interface."""
 
+import pathlib
 import subprocess
 
 import pytest
@@ -14,6 +15,16 @@ _TEST_PATHS = ["1.jpg", "10.jpg", "2.jpg"]
 def patch_config_paths(monkeypatch):
     """Patch generate_config_paths to return an empty iterator."""
     monkeypatch.setattr(galleryviewer.main, "generate_config_paths", lambda: iter(()))
+
+
+def _check_output(output, title=""):
+    return all(word in output for word in ["</html>", title, "pageIndex", "#content"])
+
+
+def _main_no_test(options=None):
+    options = options or []
+    argv = ["--no-test", *options, *_TEST_PATHS]
+    return galleryviewer.main.main(argv)
 
 
 def test_version():
@@ -45,17 +56,41 @@ def test_check_sort_output(capsys, sort_arg, expected):
     "profile_arg", ["builtin", "builtin/default.html", "builtin/dark.html"]
 )
 def test_builtin_profiles(profile_arg):
-    returncode = galleryviewer.main.main(
-        ["--no-test", "--profile", profile_arg, *_TEST_PATHS]
-    )
+    returncode = _main_no_test(options=["--profile", profile_arg])
     assert returncode == 0
 
 
 def test_output(capsys):
     title = "My Awesome Gallery"
-    returncode = galleryviewer.main.main(
-        ["--no-test", "--profile", "builtin", "--title", title, *_TEST_PATHS]
-    )
+    returncode = _main_no_test(options=["--profile", "builtin", "--title", title])
     assert returncode == 0
     output = capsys.readouterr().out
-    assert all(word in output for word in ["</html>", title, "pageIndex", "#content"])
+    assert _check_output(output, title=title)
+
+
+def test_fatal_errors_data_file_path(tmp_path):
+    data_file_path = tmp_path / "error_file.json"
+    options = ["--data-file", str(data_file_path)]
+    returncode = _main_no_test(options=options)
+    assert returncode == 1
+    data_file_path.write_bytes(b"{")
+    returncode = _main_no_test(options=options)
+    assert returncode == 100
+
+
+def test_fatal_errors_template_file_path(tmp_path):
+    template_file_path = tmp_path / "error_file.jinja2"
+    returncode = _main_no_test(options=["--template", str(template_file_path)])
+    assert returncode == 1
+
+
+def test_fatal_errors_unknown_profile_name():
+    returncode = _main_no_test(options=["--profile", "builtin/nonexistent"])
+    assert returncode == 101
+
+
+def test_file_output_option(tmp_path):
+    output_file_path = tmp_path / "output.html"
+    returncode = _main_no_test(options=["--output", str(output_file_path)])
+    assert returncode == 0
+    assert _check_output(output_file_path.read_text(), title=pathlib.Path.cwd().name)
