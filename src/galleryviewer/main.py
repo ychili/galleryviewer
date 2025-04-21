@@ -16,7 +16,7 @@ from . import _PROG, __version__
 if sys.version_info >= (3, 7):
     from contextlib import nullcontext
 else:
-    from .compat import NullContextManager as nullcontext
+    from .backports import NullContextManager as nullcontext
 
 DEFAULT_TMPL_NAME = "default.html"
 OPTION_DEFAULTS = {"data_file": None,
