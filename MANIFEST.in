@@ -3,7 +3,9 @@ graft docs
 graft test
 
 prune */__pycache__
+prune */.*cache
 
 include Makefile
+include tox.ini
 include scripts/*.py
 include data/*.html
