@@ -1,9 +1,9 @@
 .TH "GALLERYVIEWER.CONF" "5" "{{ date }}" "galleryviewer {{ version }}" "galleryviewer Manual"
 .nh
-
+.
 .SH NAME
 galleryviewer.conf \- configuration file format for galleryviewer
-
+.
 .SH DESCRIPTION
 .PP
 .B galleryviewer.conf
@@ -32,7 +32,7 @@ Contains default settings for some optional arguments.
 Contains a series of profiles.
 Profiles are short names for paths on the file system where custom
 templates can be located.
-
+.
 .SH "THE [options] SECTION"
 .PP
 Some options defaults can be set via configuration file.
@@ -76,7 +76,7 @@ Recognized values for boolean options are \[aq]yes\[aq]/\[aq]no\[aq],
 See
 .BR galleryviewer (1)
 for the meaning of these options.
-
+.
 .SH "THE [profiles] SECTION"
 .PP
 The keys in this section are the profile names.
@@ -102,7 +102,7 @@ In the above example, the argument
 would select a file named "\f[I]template.html\f[R]"
 located in the directory
 \f[C]~/Templates/galleryviewer/\f[R].
-
+.
 .SH FILES
 .TP
 .I /etc/galleryviewer.conf
@@ -115,7 +115,7 @@ The configuration will be read in the above order,
 with values in later files overriding.
 Files with lines that cannot be parsed (due to syntax errors)
 will be skipped and not read.
-
+.
 .SH EXAMPLE
 .IP
 .nf
@@ -124,7 +124,7 @@ will be skipped and not read.
 profile = user/my_template.html
 test = true
 case = ignore
-
+.
 [profiles]
 sys = /mnt/z/templates
 user = ~/Templates/galleryviewer

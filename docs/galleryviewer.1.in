@@ -1,17 +1,17 @@
 .TH "GALLERYVIEWER" "1" "{{ date }}" "galleryviewer {{ version }}" "galleryviewer Manual"
 .nh
-
+.
 .SH NAME
 galleryviewer \- create an HTML viewer for images
-
+.
 .SH SYNOPSIS
-
+.
 .B galleryviewer
 .RI [ option ]...
 .IR PATHS ...
-
+.
 .SH DESCRIPTION
-
+.
 .PP
 .B galleryviewer
 will take a series of
@@ -92,9 +92,9 @@ If there is no slash in the argument
 it is assumed to be just a profile name,
 and the default template name, "default.html",
 will be appended automatically.
-
+.
 .SH OPTIONS
-
+.
 .TP
 .BR \-h ", " \-\-help
 Show the help message and exit.
@@ -179,7 +179,7 @@ This is the default value for
 .BR \-U ", " \-\-no\-sort
 Do not sort
 .IR PATHS .
-
+.
 .SH "EXIT STATUS"
 .TP
 0
@@ -215,7 +215,7 @@ Error with loading or parsing the requested template.
 Error with writing output to specified argument to
 .B \-\-output
 or to standard output.
-
+.
 .SH FILES
 .TP
 .I /etc/galleryviewer.conf
@@ -232,7 +232,7 @@ The configuration will be read in the above order,
 with values in later files overriding.
 Configuration files with lines that cannot be parsed (due to syntax errors)
 will be skipped and not read.
-
+.
 .SH EXAMPLES
 .IP
 \f[C]galleryviewer -o index.html 1.jpg 10.jpg 2.jpg\f[R]
@@ -244,6 +244,6 @@ Write an HTML document for viewing to index.html.
 Functionally the same example as the first, but using shell features:
 globbing to select matching pathnames in the current directory
 and redirection to place standard output into a file.
-
+.
 .SH "SEE ALSO"
 .BR galleryviewer.conf (5)
