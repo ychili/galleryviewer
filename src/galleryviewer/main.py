@@ -277,7 +277,7 @@ def load_data_file(file=None):
 
 
 def generate_config_paths():
-    yield pathlib.Path("etc", f"{_PROG}.conf")
+    yield pathlib.Path("/etc", f"{_PROG}.conf")
     xdg_config_home = os.getenv("XDG_CONFIG_HOME")
     home = os.getenv("HOME")
     if xdg_config_home:
