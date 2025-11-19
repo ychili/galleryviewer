@@ -218,13 +218,13 @@ or to standard output.
 .
 .SH FILES
 .TP
-.I /etc/galleryviewer.conf
-The system wide configuration file. See
+.IR /etc/galleryviewer.conf " and " /etc/galleryviewer.conf.d/*.conf
+The system wide configuration file and configuration file directory. See
 .BR galleryviewer.conf (5)
 for further details.
 .TP
-.IR $XDG_CONFIG_HOME/galleryviewer/config " or " ~/.config/galleryviewer/config
-Per user configuration file. See
+.IR $XDG_CONFIG_HOME/galleryviewer/config " and " $XDG_CONFIG_HOME/galleryviewer/config.d/*.conf
+Per user configuration file and configuration file directory. See
 .BR galleryviewer.conf (5)
 for further details.
 .PP

@@ -105,11 +105,12 @@ located in the directory
 .
 .SH FILES
 .TP
-.I /etc/galleryviewer.conf
-The system wide configuration file.
+.IR /etc/galleryviewer.conf " and " /etc/galleryviewer.conf.d/*.conf
+The system wide configuration file and configuration file directory.
 .TP
-.IR $XDG_CONFIG_HOME/galleryviewer/config " or " ~/.config/galleryviewer/config
-Per user configuration file.
+.IR $XDG_CONFIG_HOME/galleryviewer/config " and " $XDG_CONFIG_HOME/galleryviewer/config.d/*.conf
+Per user configuration file and configuration file directory.
+If XDG_CONFIG_HOME is unset or empty, it will default to ~/.config.
 .PP
 The configuration will be read in the above order,
 with values in later files overriding.
