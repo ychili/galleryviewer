@@ -13,8 +13,7 @@ WARNING_TMPL = """File {filename} is not present! Try running 'make' first.
     included in the distribution.
 """
 
-FILE_SPEC = [("share/man/man1", ["data/galleryviewer.1.gz"]),
-             ("share/man/man5", ["data/galleryviewer.conf.5.gz"])]
+FILE_SPEC = [("share/man/man1", ["data/galleryviewer.1.gz"])]
 
 
 def data_files(file_spec):

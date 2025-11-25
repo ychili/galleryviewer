@@ -25,10 +25,10 @@ Building
 ========
 
 Make will place targets in a directory called `data`.
-The default Make target will generate the gzipped man pages
+The default Make target will generate the gzipped man page
 with the version number set to the current version number
 and the date set to the last doc source modification time in UTC.
-`make html` will create HTML versions of these man pages.
+`make html` will create an HTML version of this man page.
 
 After running make, build the Python package
 (using Setuptools or a build frontend such as
