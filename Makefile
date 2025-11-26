@@ -3,8 +3,14 @@ DOCSDIR = docs
 DATADIR = data
 DOC_SOURCES = $(DOCSDIR)/galleryviewer.1.in
 PKG_VERSION_SOURCE = src/galleryviewer/__init__.py
-render = $(PYTHON) scripts/render.py $(PKG_VERSION_SOURCE) $(DOC_SOURCES)
+render = $(PYTHON) scripts/render.py $(PKG_VERSION_SOURCE)
 grohtml = groff -man -Thtml -P-l
+git_available = $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
+ifeq ($(git_available),true)
+  get_epoch = git log -1 --pretty=format:%ct
+else
+  get_epoch = stat -c %Y
+endif
 
 docs: man
 
@@ -16,11 +22,12 @@ html: $(DATADIR)/galleryviewer.1.html
 	gzip -9 -c $< > $@
 
 $(DATADIR)/galleryviewer.1.html: $(DATADIR)/galleryviewer.1
-	SOURCE_DATE_EPOCH=$$(stat -c %Y $(DOCSDIR)/galleryviewer.1.in) \
+	SOURCE_DATE_EPOCH=$$($(get_epoch) $(DOCSDIR)/galleryviewer.1.in) \
 		$(grohtml) $< > $@
 
 $(DATADIR)/galleryviewer.1: $(DOC_SOURCES) $(PKG_VERSION_SOURCE) | $(DATADIR)
-	$(render) < $(DOCSDIR)/galleryviewer.1.in > $@
+	$(render) $$($(get_epoch) $(DOC_SOURCES)) \
+		< $(DOCSDIR)/galleryviewer.1.in > $@
 
 $(DATADIR):
 	mkdir -p $(DATADIR)

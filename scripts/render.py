@@ -1,8 +1,8 @@
-"""Substitute variables in template.
+"""Script to insert metadata in man page.
 
-Usage: render.py package_source source_documents... < input > output
+Usage: render.py package_source [source_timestamps...] < input > output
 """
-import os
+
 import sys
 import time
 
@@ -21,9 +21,14 @@ def pkg_version(path):
 
 def main():
     data = {"version": pkg_version(sys.argv[1])}
-    doc_sources = sys.argv[2:]
-    mtime = max(os.stat(filename).st_mtime for filename in doc_sources)
-    data["date"] = time.strftime("%Y-%m-%d", time.gmtime(mtime))
+    timestamps = sys.argv[2:]
+    if timestamps:
+        # Use the latest source timestamp.
+        struct_time = time.gmtime(max(int(timestamp) for timestamp in timestamps))
+    else:
+        # Use current time.
+        struct_time = time.gmtime()
+    data["date"] = time.strftime("%Y-%m-%d", struct_time)
     template = jinja2.Template(sys.stdin.read())
     sys.stdout.write(template.render(data))
 

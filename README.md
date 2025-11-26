@@ -28,6 +28,8 @@ Make will place targets in a directory called `data`.
 The default Make target will generate the gzipped man page
 with the version number set to the current version number
 and the date set to the last doc source modification time in UTC.
+For setting the date reproducibly, it will use the last committer date
+from Git, falling back to mtime if Git is not available.
 `make html` will create an HTML version of this man page.
 
 After running make, build the Python package
