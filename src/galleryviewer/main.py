@@ -280,7 +280,7 @@ def generate_config_paths():
     yield pathlib.Path("/etc", f"{_PROG}.conf")
     yield from sorted(pathlib.Path("/etc", f"{_PROG}.conf.d").glob("*.conf"))
     xdg_config_home = os.getenv("XDG_CONFIG_HOME")
-    home = os.getenv("HOME", pathlib.Path.home())
+    home = os.getenv("HOME") or pathlib.Path.home()
     if xdg_config_home:
         user_config_dir = pathlib.Path(xdg_config_home, _PROG)
     else:
