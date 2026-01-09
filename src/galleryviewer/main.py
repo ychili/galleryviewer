@@ -6,17 +6,13 @@ import os
 import pathlib
 import re
 import sys
+from contextlib import nullcontext
 from dataclasses import dataclass
 
 from jinja2 import (Environment, FileSystemLoader, PackageLoader, PrefixLoader,
                     TemplateNotFound, select_autoescape)
 
 from . import _PROG, __version__
-
-if sys.version_info >= (3, 7):
-    from contextlib import nullcontext
-else:
-    from .backports import NullContextManager as nullcontext
 
 DEFAULT_TMPL_NAME = "default.html"
 OPTION_DEFAULTS = {"data_file": None,
