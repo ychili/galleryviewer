@@ -11,7 +11,7 @@ The result is an HTML document for browsing and viewing the images.
 Requirements
 ============
 
--   Python v3.6+
+-   Python v3.7+
 -   Setuptools
 -   [Jinja2
     v2.9+](https://palletsprojects.com/p/jinja/ "Jinja2 template engine")
