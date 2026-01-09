@@ -7,9 +7,9 @@ render = $(PYTHON) scripts/render.py $(PKG_VERSION_SOURCE)
 grohtml = groff -man -Thtml -P-l
 git_available = $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 ifeq ($(git_available),true)
-  get_epoch = git log -1 --pretty=format:%ct
+  get_epoch = git log -1 --pretty=format:%ct --
 else
-  get_epoch = stat -c %Y
+  get_epoch = stat -c %Y --
 endif
 
 docs: man
