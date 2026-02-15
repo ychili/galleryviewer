@@ -65,12 +65,15 @@ class Config:
                 dest, get = self.rules[opt]
             except KeyError:
                 continue
-            value = get(mapping, opt)
+            warning_template = "in %r: invalid value for config option %s: %s"
+            try:
+                value = get(mapping, opt_key)
+            except ValueError as err:
+                logging.warning(warning_template, source, opt, err)
+                continue
             if value is None:
                 # None means value was rejected by a rule
-                logging.warning(
-                    "in %r: invalid value for config option %s: %s",
-                    source, opt, mapping[opt_key])
+                logging.warning(warning_template, source, opt, mapping[opt_key])
                 continue
             parsed[dest] = value
         self.options.update(parsed)
