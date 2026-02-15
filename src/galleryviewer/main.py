@@ -1,4 +1,5 @@
 import argparse
+import collections
 import configparser
 import json
 import logging
@@ -220,7 +221,7 @@ def get_config():
     config.add_rule("test", converter="boolean")
     config.add_rule("data_file", "datafile", "data-file")
     config.add_rule("profile")
-    config.options = OPTION_DEFAULTS
+    config.options = collections.ChainMap(config.options, OPTION_DEFAULTS)
     return config
 
 
