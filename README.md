@@ -12,7 +12,6 @@ Requirements
 ============
 
 -   Python v3.7+
--   Setuptools
 -   [Jinja2
     v2.9+](https://palletsprojects.com/p/jinja/ "Jinja2 template engine")
 
@@ -51,11 +50,6 @@ Either use the `--output` option or the shell redirection operator, `>`,
 to save it to a file such as "index.html".
 
 Consult the docs for details.
-Man page **galleryviewer**(1) describes the main function of the program
-and command-line arguments.
-Man page **galleryviewer.conf**(5) describes the format of the
-configuration file used for some additional features, namely setting
-default arguments and custom template locations.
 
 Copyright
 =========
