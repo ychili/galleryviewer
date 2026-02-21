@@ -65,7 +65,7 @@ class Config:
                 dest, get = self.rules[opt]
             except KeyError:
                 continue
-            warning_template = "in %r: invalid value for config option %s: %s"
+            warning_template = "in '%s': invalid value for config option %s: %s"
             try:
                 value = get(mapping, opt_key)
             except ValueError as err:
@@ -88,7 +88,7 @@ class Config:
         try:
             self.parser.read_file(file, source=source)
         except configparser.Error as err:
-            logging.warning("in %r: %s", source, err)
+            logging.warning("in '%s': %s", source, err)
             return
         if "options" in self.parser:
             self.parse_options(self.parser["options"], source)
@@ -110,7 +110,7 @@ class Config:
             except OSError:
                 continue
             except UnicodeDecodeError as err:
-                logging.warning("ignoring config file %r: %s", filename, err)
+                logging.warning("ignoring config file '%s': %s", filename, err)
                 continue
             with file:
                 self.read_file(file, source=filename)
