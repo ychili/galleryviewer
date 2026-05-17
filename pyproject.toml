@@ -11,6 +11,9 @@ max-line-length = 88
 [tool.pylint."messages control"]
 disable = "missing-docstring"
 
+[tool.black]
+extend-exclude = "galleryviewer/main.py"
+
 [tool.isort]
 # Use default isort settings.
 

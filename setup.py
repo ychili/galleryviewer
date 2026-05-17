@@ -29,5 +29,5 @@ def data_files(file_spec):
 
 
 setup(
-    data_files=list(data_files(FILE_SPEC))
+    data_files=list(data_files(FILE_SPEC)),
 )
