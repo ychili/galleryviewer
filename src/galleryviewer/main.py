@@ -61,6 +61,7 @@ class Config:
         for opt_key in mapping:
             opt = opt_key.lower()
             # casefold key before searching rules
+            # the configparser does this anyway, but it won't hurt to be sure
             try:
                 dest, get = self.rules[opt]
             except KeyError:

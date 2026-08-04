@@ -64,6 +64,7 @@ class TestConfig:
         config = set_options({opt_key: value})
         if result_expected is None:
             assert value in caplog.text
+            assert opt_key.lower() in caplog.text
         else:
             assert config.options["ignore_case"] == result_expected
 
@@ -81,6 +82,7 @@ class TestConfig:
         config = set_options({opt_key: value})
         if result_expected is None:
             assert value in caplog.text
+            assert opt_key.lower() in caplog.text
         else:
             assert config.options["test"] == result_expected
 
