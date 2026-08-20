@@ -17,7 +17,7 @@ Requirements
 
 For building the documentation:
 
--   `make`, `sh`, `gzip`, `stat`
+-   `gmake`, `sh`, `gzip`, `stat`
 -   [Groff](https://www.gnu.org/software/groff/ "GNU troff (Groff)")
 
 Building
