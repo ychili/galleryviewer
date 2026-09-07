@@ -1,8 +1,11 @@
 """Script to insert metadata in man page.
 
 Usage: render.py package_source [source_timestamps...] < input > output
+
+Also respects SOURCE_DATE_EPOCH for source timestamp.
 """
 
+import os
 import sys
 import time
 
@@ -26,8 +29,8 @@ def main():
         # Use the latest source timestamp.
         struct_time = time.gmtime(max(int(timestamp) for timestamp in timestamps))
     else:
-        # Use current time.
-        struct_time = time.gmtime()
+        # Use $SOURCE_DATE_EPOCH or current time.
+        struct_time = time.gmtime(int(os.environ.get("SOURCE_DATE_EPOCH", time.time())))
     data["date"] = time.strftime("%Y-%m-%d", struct_time)
     template = jinja2.Template(sys.stdin.read())
     sys.stdout.write(template.render(data))

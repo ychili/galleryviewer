@@ -26,8 +26,8 @@ $(DATADIR)/%.html: $(DATADIR)/%
 		$(grohtml) $< > $@
 
 $(DATADIR)/%: $(DOCSDIR)/%.in $(PKG_VERSION_SOURCE) | $(DATADIR)
-	$(render) $$($(get_epoch) $(DOC_SOURCES)) \
-		< $< > $@
+	SOURCE_DATE_EPOCH=$$($(get_epoch) $<) \
+		$(render) < $< > $@
 
 $(DATADIR):
 	mkdir -p $(DATADIR)
