@@ -7,9 +7,9 @@ render = $(PYTHON) scripts/render.py $(PKG_VERSION_SOURCE)
 grohtml = groff -man -Thtml -P-l
 git_available = $(shell git rev-parse --is-inside-work-tree 2>/dev/null)
 ifeq ($(git_available),true)
-  get_epoch = git log -1 --pretty=format:%ct --
+  get_epoch = git log -1 --pretty=format:%ct -- $(1)
 else
-  get_epoch = stat -c %Y --
+  get_epoch = stat -c %Y -- $(1) 2>/dev/null || stat -f %m -- $(1)
 endif
 
 docs: man
@@ -22,11 +22,11 @@ html: $(DATADIR)/galleryviewer.1.html
 	gzip -9 -c $< > $@
 
 $(DATADIR)/%.html: $(DATADIR)/%
-	SOURCE_DATE_EPOCH=$$($(get_epoch) $(DOCSDIR)/$*.in) \
+	SOURCE_DATE_EPOCH=$$($(call get_epoch,$(DOCSDIR)/$*.in)) \
 		$(grohtml) $< > $@
 
 $(DATADIR)/%: $(DOCSDIR)/%.in $(PKG_VERSION_SOURCE) | $(DATADIR)
-	SOURCE_DATE_EPOCH=$$($(get_epoch) $<) \
+	SOURCE_DATE_EPOCH=$$($(call get_epoch,$<)) \
 		$(render) < $< > $@
 
 $(DATADIR):
