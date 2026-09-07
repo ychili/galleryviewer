@@ -21,13 +21,13 @@ html: $(DATADIR)/galleryviewer.1.html
 %.gz: %
 	gzip -9 -c $< > $@
 
-$(DATADIR)/galleryviewer.1.html: $(DATADIR)/galleryviewer.1
-	SOURCE_DATE_EPOCH=$$($(get_epoch) $(DOCSDIR)/galleryviewer.1.in) \
+$(DATADIR)/%.html: $(DATADIR)/%
+	SOURCE_DATE_EPOCH=$$($(get_epoch) $(DOCSDIR)/$*.in) \
 		$(grohtml) $< > $@
 
-$(DATADIR)/galleryviewer.1: $(DOC_SOURCES) $(PKG_VERSION_SOURCE) | $(DATADIR)
+$(DATADIR)/%: $(DOCSDIR)/%.in $(PKG_VERSION_SOURCE) | $(DATADIR)
 	$(render) $$($(get_epoch) $(DOC_SOURCES)) \
-		< $(DOCSDIR)/galleryviewer.1.in > $@
+		< $< > $@
 
 $(DATADIR):
 	mkdir -p $(DATADIR)
