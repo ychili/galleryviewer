@@ -1,5 +1,6 @@
 """Test galleryviewer's command-line interface."""
 
+import os
 import pathlib
 import subprocess
 
@@ -100,3 +101,11 @@ def test_file_output_option(tmp_path):
     returncode = _main_no_test(options=["--output", str(output_file_path)])
     assert returncode == galleryviewer.main.EX_OK
     assert _check_output(output_file_path.read_text(), title=pathlib.Path.cwd().name)
+
+
+def test_file_output_error():
+    output_file_path = "/dev/full"
+    if not os.access(output_file_path, os.W_OK):
+        pytest.skip(f"not a writable path: {output_file_path}")
+    returncode = _main_no_test(options=["--output", output_file_path])
+    assert returncode == galleryviewer.main.EX_OUTPUT
