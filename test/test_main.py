@@ -1,8 +1,10 @@
 """Test galleryviewer's command-line interface."""
 
+import io
 import os
 import pathlib
 import subprocess
+import sys
 
 import pytest
 
@@ -109,3 +111,11 @@ def test_file_output_error():
         pytest.skip(f"not a writable path: {output_file_path}")
     returncode = _main_no_test(options=["--output", output_file_path])
     assert returncode == galleryviewer.main.EX_OUTPUT
+
+
+def test_template_standard_input(monkeypatch, capsys):
+    template_text = "<html></html>\n"
+    monkeypatch.setattr(sys, "stdin", io.StringIO(template_text))
+    returncode = _main_no_test(options=["--template=-"])
+    assert returncode == galleryviewer.main.EX_OK
+    assert capsys.readouterr().out == template_text
